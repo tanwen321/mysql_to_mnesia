@@ -1,0 +1,1376 @@
+-module(m2m_db_all).
+-export([start/0]).
+
+%%table:batch sync from mysql
+-record(batch, {id, wh_id, wh_code, batch, feature_type_id, feature_type_code, feature_type_name, feature_value_id, feature_value_code, feature_value_name, production_date, expiration_date, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:batch from mysql
+create_table_batch() ->
+	mnesia:create_table(batch, [{attributes, record_info(fields, batch)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:batch from mysql.
+init_data_batch(N) ->
+	Sql = "select * from wms_master_data.batch where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['batch'|X])||  X <- Bindata],
+			insert_data_batch(Data),
+			init_data_batch(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_batch([]) -> ok;
+insert_data_batch([H|T]) ->
+	mnesia:write(batch, H),
+	insert_data_batch(T).
+
+%%table:bin_sort_define sync from mysql
+-record(bin_sort_define, {id, created_time, last_modified_time, deleted, sort_code, sort_desc, sort_num, sort_field, creator_id, last_modifier_id}).
+
+%%create table:bin_sort_define from mysql
+create_table_bin_sort_define() ->
+	mnesia:create_table(bin_sort_define, [{attributes, record_info(fields, bin_sort_define)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:bin_sort_define from mysql.
+init_data_bin_sort_define(N) ->
+	Sql = "select * from wms_master_data.bin_sort_define where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['bin_sort_define'|X])||  X <- Bindata],
+			insert_data_bin_sort_define(Data),
+			init_data_bin_sort_define(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_bin_sort_define([]) -> ok;
+insert_data_bin_sort_define([H|T]) ->
+	mnesia:write(bin_sort_define, H),
+	insert_data_bin_sort_define(T).
+
+%%table:category sync from mysql
+-record(category, {id, created_time, last_modified_time, deleted, category_code, category_name, parent_category_id, state, creator_id, last_modifier_id, unique_code}).
+
+%%create table:category from mysql
+create_table_category() ->
+	mnesia:create_table(category, [{attributes, record_info(fields, category)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:category from mysql.
+init_data_category(N) ->
+	Sql = "select * from wms_master_data.category where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['category'|X])||  X <- Bindata],
+			insert_data_category(Data),
+			init_data_category(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_category([]) -> ok;
+insert_data_category([H|T]) ->
+	mnesia:write(category, H),
+	insert_data_category(T).
+
+%%table:customer sync from mysql
+-record(customer, {id, customer_code, merchant_customer_code, name, customer_type_id, country_id, province_id, city_id, district_id, address, telephone, contracts, customer_scale, second_picking_tag, merchant_id, merchant_code, country, province, city, district, load_require, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:customer from mysql
+create_table_customer() ->
+	mnesia:create_table(customer, [{attributes, record_info(fields, customer)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:customer from mysql.
+init_data_customer(N) ->
+	Sql = "select * from wms_master_data.customer where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['customer'|X])||  X <- Bindata],
+			insert_data_customer(Data),
+			init_data_customer(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_customer([]) -> ok;
+insert_data_customer([H|T]) ->
+	mnesia:write(customer, H),
+	insert_data_customer(T).
+
+%%table:customer_type sync from mysql
+-record(customer_type, {id, code, name, description, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:customer_type from mysql
+create_table_customer_type() ->
+	mnesia:create_table(customer_type, [{attributes, record_info(fields, customer_type)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:customer_type from mysql.
+init_data_customer_type(N) ->
+	Sql = "select * from wms_master_data.customer_type where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['customer_type'|X])||  X <- Bindata],
+			insert_data_customer_type(Data),
+			init_data_customer_type(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_customer_type([]) -> ok;
+insert_data_customer_type([H|T]) ->
+	mnesia:write(customer_type, H),
+	insert_data_customer_type(T).
+
+%%table:entitle_party sync from mysql
+-record(entitle_party, {id, created_time, last_modified_time, deleted, ep_code, ep_name, ep_type, telephone, address, zip_code, fax, contacts, note, country, province_id, city_id, district_id, merchant_id, merchant_code, state, transport_area, province, city, district, creator_id, last_modifier_id, unique_code}).
+
+%%create table:entitle_party from mysql
+create_table_entitle_party() ->
+	mnesia:create_table(entitle_party, [{attributes, record_info(fields, entitle_party)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:entitle_party from mysql.
+init_data_entitle_party(N) ->
+	Sql = "select * from wms_master_data.entitle_party where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['entitle_party'|X])||  X <- Bindata],
+			insert_data_entitle_party(Data),
+			init_data_entitle_party(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_entitle_party([]) -> ok;
+insert_data_entitle_party([H|T]) ->
+	mnesia:write(entitle_party, H),
+	insert_data_entitle_party(T).
+
+%%table:feature_type sync from mysql
+-record(feature_type, {id, code, name, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:feature_type from mysql
+create_table_feature_type() ->
+	mnesia:create_table(feature_type, [{attributes, record_info(fields, feature_type)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:feature_type from mysql.
+init_data_feature_type(N) ->
+	Sql = "select * from wms_master_data.feature_type where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['feature_type'|X])||  X <- Bindata],
+			insert_data_feature_type(Data),
+			init_data_feature_type(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_feature_type([]) -> ok;
+insert_data_feature_type([H|T]) ->
+	mnesia:write(feature_type, H),
+	insert_data_feature_type(T).
+
+%%table:feature_value sync from mysql
+-record(feature_value, {id, code, name, feature_type_id, feature_type_code, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:feature_value from mysql
+create_table_feature_value() ->
+	mnesia:create_table(feature_value, [{attributes, record_info(fields, feature_value)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:feature_value from mysql.
+init_data_feature_value(N) ->
+	Sql = "select * from wms_master_data.feature_value where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['feature_value'|X])||  X <- Bindata],
+			insert_data_feature_value(Data),
+			init_data_feature_value(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_feature_value([]) -> ok;
+insert_data_feature_value([H|T]) ->
+	mnesia:write(feature_value, H),
+	insert_data_feature_value(T).
+
+%%table:fix_bin sync from mysql
+-record(fix_bin, {id, created_time, last_modified_time, deleted, wh_id, bin_code, bin_id, product_id, product_code, max_num, min_num, add_num, package_unit_id, round_type, round_num, class_id, section_id, creator_id, last_modifier_id, unique_code, wh_stock_type_id, entitle_party_Id, rep_exec_state}).
+
+%%create table:fix_bin from mysql
+create_table_fix_bin() ->
+	mnesia:create_table(fix_bin, [{attributes, record_info(fields, fix_bin)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:fix_bin from mysql.
+init_data_fix_bin(N) ->
+	Sql = "select * from wms_master_data.fix_bin where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['fix_bin'|X])||  X <- Bindata],
+			insert_data_fix_bin(Data),
+%			init_data_fix_bin(Nowid);
+			F=fun()->init_data_fix_bin(Nowid) end,
+			mnesia:transaction(F).
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_fix_bin([]) -> ok;
+insert_data_fix_bin([H|T]) ->
+	mnesia:write(H),
+	insert_data_fix_bin(T).
+
+%%table:fix_bin_class_assignment sync from mysql
+-record(fix_bin_class_assignment, {id, wh_id, class_id, fix_class_id, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:fix_bin_class_assignment from mysql
+create_table_fix_bin_class_assignment() ->
+	mnesia:create_table(fix_bin_class_assignment, [{attributes, record_info(fields, fix_bin_class_assignment)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:fix_bin_class_assignment from mysql.
+init_data_fix_bin_class_assignment(N) ->
+	Sql = "select * from wms_master_data.fix_bin_class_assignment where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['fix_bin_class_assignment'|X])||  X <- Bindata],
+			insert_data_fix_bin_class_assignment(Data),
+			init_data_fix_bin_class_assignment(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_fix_bin_class_assignment([]) -> ok;
+insert_data_fix_bin_class_assignment([H|T]) ->
+	mnesia:write(fix_bin_class_assignment, H),
+	insert_data_fix_bin_class_assignment(T).
+
+%%table:in_out_control sync from mysql
+-record(in_out_control, {id, created_time, last_modified_time, deleted, control_code, control_name, io_type, out_package_type, note, creator_id, last_modifier_id, unique_code}).
+
+%%create table:in_out_control from mysql
+create_table_in_out_control() ->
+	mnesia:create_table(in_out_control, [{attributes, record_info(fields, in_out_control)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:in_out_control from mysql.
+init_data_in_out_control(N) ->
+	Sql = "select * from wms_master_data.in_out_control where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['in_out_control'|X])||  X <- Bindata],
+			insert_data_in_out_control(Data),
+			init_data_in_out_control(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_in_out_control([]) -> ok;
+insert_data_in_out_control([H|T]) ->
+	mnesia:write(in_out_control, H),
+	insert_data_in_out_control(T).
+
+%%table:merchant sync from mysql
+-record(merchant, {id, merchant_code, merchant_name, province_id, city_id, district_id, address, contacts, contacts_phone, contacts_email, deleted, creator_id, last_modifier_id, unique_code, created_time, last_modified_time, entry_source, state}).
+
+%%create table:merchant from mysql
+create_table_merchant() ->
+	mnesia:create_table(merchant, [{attributes, record_info(fields, merchant)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:merchant from mysql.
+init_data_merchant(N) ->
+	Sql = "select * from wms_master_data.merchant where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['merchant'|X])||  X <- Bindata],
+			insert_data_merchant(Data),
+			init_data_merchant(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_merchant([]) -> ok;
+insert_data_merchant([H|T]) ->
+	mnesia:write(merchant, H),
+	insert_data_merchant(T).
+
+%%table:merchant_product sync from mysql
+-record(merchant_product, {id, merchant_code, merchant_id, ep_code, ep_id, product_code, product_name, origin_place, shelf_life, remaining_shelf_life, shelf_life_unit_id, shelf_life_unit_code, shelf_life_percent, category_code, category_id, storage_condition, entry_source, creator_id, last_modifier_id, product_type_code, rel_gen_state, rel_gen_log, rel_update_state, rel_update_log, unique_code, deleted, created_time, last_modified_time}).
+
+%%create table:merchant_product from mysql
+create_table_merchant_product() ->
+	mnesia:create_table(merchant_product, [{attributes, record_info(fields, merchant_product)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:merchant_product from mysql.
+init_data_merchant_product(N) ->
+	Sql = "select * from wms_master_data.merchant_product where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['merchant_product'|X])||  X <- Bindata],
+			insert_data_merchant_product(Data),
+			init_data_merchant_product(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_merchant_product([]) -> ok;
+insert_data_merchant_product([H|T]) ->
+	mnesia:write(merchant_product, H),
+	insert_data_merchant_product(T).
+
+%%table:merchant_product_package sync from mysql
+-record(merchant_product_package, {id, merchant_id, merchant_code, product_code, product_unit_code, product_unit_id, numerator, denominator, gross_weight, net_weight, weight_unit_id, weight_unit_code, volume, volume_unit_code, volume_unit_id, length, width, height, measure_unit_code, measure_unit_id, is_mini_unit, is_box_unit, is_pallet_unit, ean, ean1, ean2, ean3, ean_type, entry_source, rel_update_log, rel_update_state, rel_gen_state, rel_gen_log, creator_id, last_modifier_id, unique_code, deleted, created_time, last_modified_time}).
+
+%%create table:merchant_product_package from mysql
+create_table_merchant_product_package() ->
+	mnesia:create_table(merchant_product_package, [{attributes, record_info(fields, merchant_product_package)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:merchant_product_package from mysql.
+init_data_merchant_product_package(N) ->
+	Sql = "select * from wms_master_data.merchant_product_package where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['merchant_product_package'|X])||  X <- Bindata],
+			insert_data_merchant_product_package(Data),
+			init_data_merchant_product_package(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_merchant_product_package([]) -> ok;
+insert_data_merchant_product_package([H|T]) ->
+	mnesia:write(merchant_product_package, H),
+	insert_data_merchant_product_package(T).
+
+%%table:package_specification sync from mysql
+-record(package_specification, {id, spec_code, spec_name, spec_type, length, width, height, volume, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:package_specification from mysql
+create_table_package_specification() ->
+	mnesia:create_table(package_specification, [{attributes, record_info(fields, package_specification)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:package_specification from mysql.
+init_data_package_specification(N) ->
+	Sql = "select * from wms_master_data.package_specification where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['package_specification'|X])||  X <- Bindata],
+			insert_data_package_specification(Data),
+			init_data_package_specification(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_package_specification([]) -> ok;
+insert_data_package_specification([H|T]) ->
+	mnesia:write(package_specification, H),
+	insert_data_package_specification(T).
+
+%%table:pick_diff_area sync from mysql
+-record(pick_diff_area, {id, wh_id, src_storage_class_id, src_storage_class_code, dest_storage_class_id, dest_storage_class_code, creator_id, created_time, last_modifier_id, last_modified_time, deleted, unique_code}).
+
+%%create table:pick_diff_area from mysql
+create_table_pick_diff_area() ->
+	mnesia:create_table(pick_diff_area, [{attributes, record_info(fields, pick_diff_area)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:pick_diff_area from mysql.
+init_data_pick_diff_area(N) ->
+	Sql = "select * from wms_master_data.pick_diff_area where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['pick_diff_area'|X])||  X <- Bindata],
+			insert_data_pick_diff_area(Data),
+			init_data_pick_diff_area(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_pick_diff_area([]) -> ok;
+insert_data_pick_diff_area([H|T]) ->
+	mnesia:write(pick_diff_area, H),
+	insert_data_pick_diff_area(T).
+
+%%table:product sync from mysql
+-record(product, {id, created_time, last_modified_time, deleted, wh_id, merchant_id, ep_id, category_id, product_code, product_name, product_type, note, origin_place, storage_bin_type_id, wh_product_group_id, wh_storage_condition, wh_processing_status, transport_group_id, load_unload_group_id, shelf_life, remaining_shelf_life, shelf_life_unit_id, shelf_life_percent, ep_product_id, ep_product_code, batch_mgmt_req, catalog_no, hazard_indicator, reference_2, bom_category, entry_source, creator_id, last_modifier_id, unique_code, second_picking_tag, validation_tag}).
+
+%%create table:product from mysql
+create_table_product() ->
+	mnesia:create_table(product, [{attributes, record_info(fields, product)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product from mysql.
+init_data_product(N) ->
+	Sql = "select * from wms_master_data.product where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product'|X])||  X <- Bindata],
+			insert_data_product(Data),
+			init_data_product(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product([]) -> ok;
+insert_data_product([H|T]) ->
+	mnesia:write(product, H),
+	insert_data_product(T).
+
+%%table:product_bom_relation sync from mysql
+-record(product_bom_relation, {id, ep_id, wh_id, main_product_id, sub_product_id, quantity, bom_type, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:product_bom_relation from mysql
+create_table_product_bom_relation() ->
+	mnesia:create_table(product_bom_relation, [{attributes, record_info(fields, product_bom_relation)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_bom_relation from mysql.
+init_data_product_bom_relation(N) ->
+	Sql = "select * from wms_master_data.product_bom_relation where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_bom_relation'|X])||  X <- Bindata],
+			insert_data_product_bom_relation(Data),
+			init_data_product_bom_relation(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_bom_relation([]) -> ok;
+insert_data_product_bom_relation([H|T]) ->
+	mnesia:write(product_bom_relation, H),
+	insert_data_product_bom_relation(T).
+
+%%table:product_package sync from mysql
+-record(product_package, {id, created_time, last_modified_time, deleted, wh_id, merchant_id, ep_id, product_id, product_code, product_name, product_unit_id, product_unit_code, product_unit_name, denominator, numerator, length, width, height, measure_unit_id, volume, volume_unit_id, gross_weight, net_weight, weight_unit_id, ean, ean1, ean2, ean3, ean4, ean5, ean6, ean7, ean8, ean_type, out_control_id, in_control_id, piece_layer, layer_level, is_mini_unit, is_box_unit, is_pallet_unit, can_split, is_compound, out_control_enabled, creator_id, last_modifier_id, unique_code, entry_source}).
+
+%%create table:product_package from mysql
+create_table_product_package() ->
+	mnesia:create_table(product_package, [{attributes, record_info(fields, product_package)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_package from mysql.
+init_data_product_package(N) ->
+	Sql = "select * from wms_master_data.product_package where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_package'|X])||  X <- Bindata],
+			insert_data_product_package(Data),
+			init_data_product_package(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_package([]) -> ok;
+insert_data_product_package([H|T]) ->
+	mnesia:write(product_package, H),
+	insert_data_product_package(T).
+
+%%table:product_package_ean sync from mysql
+-record(product_package_ean, {id, product_package_id, seq_no, ean, created_time}).
+
+%%create table:product_package_ean from mysql
+create_table_product_package_ean() ->
+	mnesia:create_table(product_package_ean, [{attributes, record_info(fields, product_package_ean)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_package_ean from mysql.
+init_data_product_package_ean(N) ->
+	Sql = "select * from wms_master_data.product_package_ean where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_package_ean'|X])||  X <- Bindata],
+			insert_data_product_package_ean(Data),
+			init_data_product_package_ean(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_package_ean([]) -> ok;
+insert_data_product_package_ean([H|T]) ->
+	mnesia:write(product_package_ean, H),
+	insert_data_product_package_ean(T).
+
+%%table:product_storage_class sync from mysql
+-record(product_storage_class, {id, created_time, last_modified_time, deleted, wh_id, class_id, product_id, product_code, product_name, ep_id, storage_bin_type, creator_id, last_modifier_id, unique_code}).
+
+%%create table:product_storage_class from mysql
+create_table_product_storage_class() ->
+	mnesia:create_table(product_storage_class, [{attributes, record_info(fields, product_storage_class)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_storage_class from mysql.
+init_data_product_storage_class(N) ->
+	Sql = "select * from wms_master_data.product_storage_class where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_storage_class'|X])||  X <- Bindata],
+			insert_data_product_storage_class(Data),
+			init_data_product_storage_class(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_storage_class([]) -> ok;
+insert_data_product_storage_class([H|T]) ->
+	mnesia:write(product_storage_class, H),
+	insert_data_product_storage_class(T).
+
+%%table:product_storage_class_tag sync from mysql
+-record(product_storage_class_tag, {id, created_time, last_modified_time, deleted, wh_id, class_id, product_id, tag_id, tag_type, product_storage_class_id, creator_id, last_modifier_id, unique_code}).
+
+%%create table:product_storage_class_tag from mysql
+create_table_product_storage_class_tag() ->
+	mnesia:create_table(product_storage_class_tag, [{attributes, record_info(fields, product_storage_class_tag)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_storage_class_tag from mysql.
+init_data_product_storage_class_tag(N) ->
+	Sql = "select * from wms_master_data.product_storage_class_tag where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_storage_class_tag'|X])||  X <- Bindata],
+			insert_data_product_storage_class_tag(Data),
+			init_data_product_storage_class_tag(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_storage_class_tag([]) -> ok;
+insert_data_product_storage_class_tag([H|T]) ->
+	mnesia:write(product_storage_class_tag, H),
+	insert_data_product_storage_class_tag(T).
+
+%%table:product_tag sync from mysql
+-record(product_tag, {id, created_time, last_modified_time, deleted, wh_id, tag_id, tag_code, tag_type, product_id, creator_id, last_modifier_id, unique_code}).
+
+%%create table:product_tag from mysql
+create_table_product_tag() ->
+	mnesia:create_table(product_tag, [{attributes, record_info(fields, product_tag)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:product_tag from mysql.
+init_data_product_tag(N) ->
+	Sql = "select * from wms_master_data.product_tag where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['product_tag'|X])||  X <- Bindata],
+			insert_data_product_tag(Data),
+			init_data_product_tag(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_product_tag([]) -> ok;
+insert_data_product_tag([H|T]) ->
+	mnesia:write(product_tag, H),
+	insert_data_product_tag(T).
+
+%%table:standard_part sync from mysql
+-record(standard_part, {id, creator_id, created_time, last_modifier_id, last_modified_time, deleted, unique_code, wh_id, product_code, package_material_id, bin_id, quantity, unit_id, weight, weight_unit_id, create_type, update_type}).
+
+%%create table:standard_part from mysql
+create_table_standard_part() ->
+	mnesia:create_table(standard_part, [{attributes, record_info(fields, standard_part)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:standard_part from mysql.
+init_data_standard_part(N) ->
+	Sql = "select * from wms_master_data.standard_part where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['standard_part'|X])||  X <- Bindata],
+			insert_data_standard_part(Data),
+			init_data_standard_part(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_standard_part([]) -> ok;
+insert_data_standard_part([H|T]) ->
+	mnesia:write(standard_part, H),
+	insert_data_standard_part(T).
+
+%%table:storage_bin sync from mysql
+-record(storage_bin, {id, created_time, last_modified_time, deleted, wh_id, class_id, section_id, bin_code, bin_type_id, length, width, height, measure_unit, max_volume, volume_unit, max_weight, weight_unit, state, bin_level_id, is_fix, x, y, z, channel, stack, layer, room, froze_state, up_assign_state, last_assign_time, channel_code, seq_no, creator_id, last_modifier_id, unique_code, class_code, section_code}).
+
+%%create table:storage_bin from mysql
+create_table_storage_bin() ->
+	mnesia:create_table(storage_bin, [{attributes, record_info(fields, storage_bin)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin from mysql.
+init_data_storage_bin(N) ->
+	Sql = "select * from wms_master_data.storage_bin where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_bin'|X])||  X <- Bindata],
+			insert_data_storage_bin(Data),
+			init_data_storage_bin(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_bin([]) -> ok;
+insert_data_storage_bin([H|T]) ->
+	mnesia:write(storage_bin, H),
+	insert_data_storage_bin(T).
+
+%%table:storage_bin_level sync from mysql
+-record(storage_bin_level, {id, wh_id, wh_code, level_code, description, creator_id, created_time, last_modified_time, last_modifier_id, deleted}).
+
+%%create table:storage_bin_level from mysql
+create_table_storage_bin_level() ->
+	mnesia:create_table(storage_bin_level, [{attributes, record_info(fields, storage_bin_level)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin_level from mysql.
+init_data_storage_bin_level(N) ->
+	Sql = "select * from wms_master_data.storage_bin_level where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_bin_level'|X])||  X <- Bindata],
+			insert_data_storage_bin_level(Data),
+			init_data_storage_bin_level(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_bin_level([]) -> ok;
+insert_data_storage_bin_level([H|T]) ->
+	mnesia:write(storage_bin_level, H),
+	insert_data_storage_bin_level(T).
+
+%%table:storage_bin_sort sync from mysql
+-record(storage_bin_sort, {id, created_time, last_modified_time, deleted, wh_id, wh_code, task_type, bin_id, bin_code, storage_class_id, storage_class_code, storage_section_id, storage_section_code, activity_area_id, activity_area_code, order_seq, creator_id, last_modifier_id, pick_mode, bin_type_Id}).
+
+%%create table:storage_bin_sort from mysql
+create_table_storage_bin_sort() ->
+	mnesia:create_table(storage_bin_sort, [{attributes, record_info(fields, storage_bin_sort)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin_sort from mysql.
+init_data_storage_bin_sort(N) ->
+	Sql = "select * from wms_master_data.storage_bin_sort where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_bin_sort'|X])||  X <- Bindata],
+			insert_data_storage_bin_sort(Data),
+			init_data_storage_bin_sort(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_bin_sort([]) -> ok;
+insert_data_storage_bin_sort([H|T]) ->
+	mnesia:write(storage_bin_sort, H),
+	insert_data_storage_bin_sort(T).
+
+%%table:storage_bin_type sync from mysql
+-record(storage_bin_type, {id, wh_id, wh_code, type_code, description, creator_id, created_time, last_modifier_id, last_modified_time, deleted}).
+
+%%create table:storage_bin_type from mysql
+create_table_storage_bin_type() ->
+	mnesia:create_table(storage_bin_type, [{attributes, record_info(fields, storage_bin_type)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin_type from mysql.
+init_data_storage_bin_type(N) ->
+	Sql = "select * from wms_master_data.storage_bin_type where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_bin_type'|X])||  X <- Bindata],
+			insert_data_storage_bin_type(Data),
+			init_data_storage_bin_type(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_bin_type([]) -> ok;
+insert_data_storage_bin_type([H|T]) ->
+	mnesia:write(storage_bin_type, H),
+	insert_data_storage_bin_type(T).
+
+%%table:storage_bin_type_gr_sort sync from mysql
+-record(storage_bin_type_gr_sort, {id, wh_id, storage_class_id, product_bin_type_id, storage_bin_type_id, sort_num, deleted, creator_id, created_time, last_modified_time, last_modifier_id}).
+
+%%create table:storage_bin_type_gr_sort from mysql
+create_table_storage_bin_type_gr_sort() ->
+	mnesia:create_table(storage_bin_type_gr_sort, [{attributes, record_info(fields, storage_bin_type_gr_sort)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin_type_gr_sort from mysql.
+init_data_storage_bin_type_gr_sort(N) ->
+	Sql = "select * from wms_master_data.storage_bin_type_gr_sort where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_bin_type_gr_sort'|X])||  X <- Bindata],
+			insert_data_storage_bin_type_gr_sort(Data),
+			init_data_storage_bin_type_gr_sort(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_bin_type_gr_sort([]) -> ok;
+insert_data_storage_bin_type_gr_sort([H|T]) ->
+	mnesia:write(storage_bin_type_gr_sort, H),
+	insert_data_storage_bin_type_gr_sort(T).
+
+%%table:storage_class sync from mysql
+-record(storage_class, {id, created_time, last_modified_time, deleted, wh_id, class_code, class_name, class_role, note, mix_level, is_negative_stock, state, need_gr_area_search, putaway_rule, creator_id, last_modifier_id, need_gi_area_search, pick_rule_id, use_container_code, unique_code, is_receive_date_key, storage_bin_search_rule, storage_location_id, storage_location_code, is_fixed_storage_bin, max_storage_bin_num, check_max_storage_bin_num, combined_package, inventory_flag}).
+
+%%create table:storage_class from mysql
+create_table_storage_class() ->
+	mnesia:create_table(storage_class, [{attributes, record_info(fields, storage_class)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_class from mysql.
+init_data_storage_class(N) ->
+	Sql = "select * from wms_master_data.storage_class where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_class'|X])||  X <- Bindata],
+			insert_data_storage_class(Data),
+			init_data_storage_class(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_class([]) -> ok;
+insert_data_storage_class([H|T]) ->
+	mnesia:write(storage_class, H),
+	insert_data_storage_class(T).
+
+%%table:storage_section sync from mysql
+-record(storage_section, {id, created_time, last_modified_time, deleted, wh_id, class_id, section_code, section_name, state, creator_id, last_modifier_id, unique_code}).
+
+%%create table:storage_section from mysql
+create_table_storage_section() ->
+	mnesia:create_table(storage_section, [{attributes, record_info(fields, storage_section)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_section from mysql.
+init_data_storage_section(N) ->
+	Sql = "select * from wms_master_data.storage_section where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['storage_section'|X])||  X <- Bindata],
+			insert_data_storage_section(Data),
+			init_data_storage_section(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_storage_section([]) -> ok;
+insert_data_storage_section([H|T]) ->
+	mnesia:write(storage_section, H),
+	insert_data_storage_section(T).
+
+%%table:supplier sync from mysql
+-record(supplier, {id, code, title, email, status_id, status_code, status_name, merchant_id, merchant_code, merchant_supplier_code, name, type, country_id, province_id, city_id, district_id, address, telephone, telephone2, contracts, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:supplier from mysql
+create_table_supplier() ->
+	mnesia:create_table(supplier, [{attributes, record_info(fields, supplier)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:supplier from mysql.
+init_data_supplier(N) ->
+	Sql = "select * from wms_master_data.supplier where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['supplier'|X])||  X <- Bindata],
+			insert_data_supplier(Data),
+			init_data_supplier(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_supplier([]) -> ok;
+insert_data_supplier([H|T]) ->
+	mnesia:write(supplier, H),
+	insert_data_supplier(T).
+
+%%table:supplier_status sync from mysql
+-record(supplier_status, {id, code, name, created_time, last_modified_time, deleted, creator_id, last_modifier_id, unique_code}).
+
+%%create table:supplier_status from mysql
+create_table_supplier_status() ->
+	mnesia:create_table(supplier_status, [{attributes, record_info(fields, supplier_status)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:supplier_status from mysql.
+init_data_supplier_status(N) ->
+	Sql = "select * from wms_master_data.supplier_status where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['supplier_status'|X])||  X <- Bindata],
+			insert_data_supplier_status(Data),
+			init_data_supplier_status(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_supplier_status([]) -> ok;
+insert_data_supplier_status([H|T]) ->
+	mnesia:write(supplier_status, H),
+	insert_data_supplier_status(T).
+
+%%table:tag sync from mysql
+-record(tag, {id, created_time, last_modified_time, deleted, wh_id, tag_code, tag_name, tag_type, note, creator_id, last_modifier_id, unique_code}).
+
+%%create table:tag from mysql
+create_table_tag() ->
+	mnesia:create_table(tag, [{attributes, record_info(fields, tag)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:tag from mysql.
+init_data_tag(N) ->
+	Sql = "select * from wms_master_data.tag where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['tag'|X])||  X <- Bindata],
+			insert_data_tag(Data),
+			init_data_tag(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_tag([]) -> ok;
+insert_data_tag([H|T]) ->
+	mnesia:write(tag, H),
+	insert_data_tag(T).
+
+%%table:unit sync from mysql
+-record(unit, {id, deleted, unit_code, unit_name, unit_type, unit_precision, basic_unit_name, basic_unit_ratio, note, creator_id, created_time, unique_code, last_modifier_id, last_modified_time}).
+
+%%create table:unit from mysql
+create_table_unit() ->
+	mnesia:create_table(unit, [{attributes, record_info(fields, unit)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:unit from mysql.
+init_data_unit(N) ->
+	Sql = "select * from wms_master_data.unit where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['unit'|X])||  X <- Bindata],
+			insert_data_unit(Data),
+			init_data_unit(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_unit([]) -> ok;
+insert_data_unit([H|T]) ->
+	mnesia:write(unit, H),
+	insert_data_unit(T).
+
+%%table:warehouse sync from mysql
+-record(warehouse, {id, created_time, last_modified_time, deleted, wh_name, address, manager_id, telephone, province_id, city_id, district_id, longitude, latitude, wh_type, wh_code, state, organ_id, dept_id, creator_id, last_modifier_id, unique_code, packageable, cross_docking_type}).
+
+%%create table:warehouse from mysql
+create_table_warehouse() ->
+	mnesia:create_table(warehouse, [{attributes, record_info(fields, warehouse)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:warehouse from mysql.
+init_data_warehouse(N) ->
+	Sql = "select * from wms_master_data.warehouse where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['warehouse'|X])||  X <- Bindata],
+			insert_data_warehouse(Data),
+			init_data_warehouse(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_warehouse([]) -> ok;
+insert_data_warehouse([H|T]) ->
+	mnesia:write(warehouse, H),
+	insert_data_warehouse(T).
+
+%%table:warehouse_group sync from mysql
+-record(warehouse_group, {id, created_time, last_modified_time, deleted, wh_id, group_code, group_name, group_type, note, creator_id, last_modifier_id, unique_code}).
+
+%%create table:warehouse_group from mysql
+create_table_warehouse_group() ->
+	mnesia:create_table(warehouse_group, [{attributes, record_info(fields, warehouse_group)},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:warehouse_group from mysql.
+init_data_warehouse_group(N) ->
+	Sql = "select * from wms_master_data.warehouse_group where deleted=0 and id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['warehouse_group'|X])||  X <- Bindata],
+			insert_data_warehouse_group(Data),
+			init_data_warehouse_group(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+insert_data_warehouse_group([]) -> ok;
+insert_data_warehouse_group([H|T]) ->
+	mnesia:write(warehouse_group, H),
+	insert_data_warehouse_group(T).
+
+%%start transform 
+start() ->
+	case lists:member(warehouse_group, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:warehouse_group is exit !!!");
+	false ->
+		create_table_warehouse_group(),
+		init_data_warehouse_group(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(warehouse, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:warehouse is exit !!!");
+	false ->
+		create_table_warehouse(),
+		init_data_warehouse(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(unit, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:unit is exit !!!");
+	false ->
+		create_table_unit(),
+		init_data_unit(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(tag, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:tag is exit !!!");
+	false ->
+		create_table_tag(),
+		init_data_tag(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(supplier_status, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:supplier_status is exit !!!");
+	false ->
+		create_table_supplier_status(),
+		init_data_supplier_status(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(supplier, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:supplier is exit !!!");
+	false ->
+		create_table_supplier(),
+		init_data_supplier(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_section, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_section is exit !!!");
+	false ->
+		create_table_storage_section(),
+		init_data_storage_section(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_class, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_class is exit !!!");
+	false ->
+		create_table_storage_class(),
+		init_data_storage_class(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_bin_type_gr_sort, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_bin_type_gr_sort is exit !!!");
+	false ->
+		create_table_storage_bin_type_gr_sort(),
+		init_data_storage_bin_type_gr_sort(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_bin_type, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_bin_type is exit !!!");
+	false ->
+		create_table_storage_bin_type(),
+		init_data_storage_bin_type(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_bin_sort, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_bin_sort is exit !!!");
+	false ->
+		create_table_storage_bin_sort(),
+		init_data_storage_bin_sort(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_bin_level, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_bin_level is exit !!!");
+	false ->
+		create_table_storage_bin_level(),
+		init_data_storage_bin_level(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(storage_bin, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:storage_bin is exit !!!");
+	false ->
+		create_table_storage_bin(),
+		init_data_storage_bin(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(standard_part, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:standard_part is exit !!!");
+	false ->
+		create_table_standard_part(),
+		init_data_standard_part(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_tag, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_tag is exit !!!");
+	false ->
+		create_table_product_tag(),
+		init_data_product_tag(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_storage_class_tag, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_storage_class_tag is exit !!!");
+	false ->
+		create_table_product_storage_class_tag(),
+		init_data_product_storage_class_tag(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_storage_class, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_storage_class is exit !!!");
+	false ->
+		create_table_product_storage_class(),
+		init_data_product_storage_class(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_package_ean, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_package_ean is exit !!!");
+	false ->
+		create_table_product_package_ean(),
+		init_data_product_package_ean(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_package, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_package is exit !!!");
+	false ->
+		create_table_product_package(),
+		init_data_product_package(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product_bom_relation, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product_bom_relation is exit !!!");
+	false ->
+		create_table_product_bom_relation(),
+		init_data_product_bom_relation(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(product, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:product is exit !!!");
+	false ->
+		create_table_product(),
+		init_data_product(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(pick_diff_area, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:pick_diff_area is exit !!!");
+	false ->
+		create_table_pick_diff_area(),
+		init_data_pick_diff_area(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(package_specification, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:package_specification is exit !!!");
+	false ->
+		create_table_package_specification(),
+		init_data_package_specification(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(merchant_product_package, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:merchant_product_package is exit !!!");
+	false ->
+		create_table_merchant_product_package(),
+		init_data_merchant_product_package(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(merchant_product, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:merchant_product is exit !!!");
+	false ->
+		create_table_merchant_product(),
+		init_data_merchant_product(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(merchant, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:merchant is exit !!!");
+	false ->
+		create_table_merchant(),
+		init_data_merchant(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(in_out_control, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:in_out_control is exit !!!");
+	false ->
+		create_table_in_out_control(),
+		init_data_in_out_control(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(fix_bin_class_assignment, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:fix_bin_class_assignment is exit !!!");
+	false ->
+		create_table_fix_bin_class_assignment(),
+		init_data_fix_bin_class_assignment(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(fix_bin, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:fix_bin is exit !!!");
+	false ->
+		create_table_fix_bin(),
+		init_data_fix_bin(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(feature_value, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:feature_value is exit !!!");
+	false ->
+		create_table_feature_value(),
+		init_data_feature_value(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(feature_type, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:feature_type is exit !!!");
+	false ->
+		create_table_feature_type(),
+		init_data_feature_type(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(entitle_party, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:entitle_party is exit !!!");
+	false ->
+		create_table_entitle_party(),
+		init_data_entitle_party(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(customer_type, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:customer_type is exit !!!");
+	false ->
+		create_table_customer_type(),
+		init_data_customer_type(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(customer, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:customer is exit !!!");
+	false ->
+		create_table_customer(),
+		init_data_customer(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(category, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:category is exit !!!");
+	false ->
+		create_table_category(),
+		init_data_category(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(bin_sort_define, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:bin_sort_define is exit !!!");
+	false ->
+		create_table_bin_sort_define(),
+		init_data_bin_sort_define(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member(batch, mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:batch is exit !!!");
+	false ->
+		create_table_batch(),
+		init_data_batch(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end.
