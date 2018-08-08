@@ -2,21 +2,27 @@
 change databases from mysql db to mnesia db
 # 转换mysql到erlang的mnesia库下面（表结构和数据）
 
-主函数说明
+# 主函数说明
 m2m:mysql_to_mnesia/1
+
 %参数为mysql数据库名
+
 %功能是把该数据库下面的所有表都同步到mnesia
 
 m2m:mysql_to_mnesia/2
+
 %参数为mysql数据库名和表名
+
 %功能是把该数据库下面的某个表同步到mnesia
 
+# 使用实例
+首先要修改include/m2m.hrl文件里面的mysql连接设置
 
-#erlc -o ebin/ src/*.erl
+#erlc -o ebin/ src/*.erl                              %编译源码
 
-#erlc -o deps/erlang-mysql-driver/ebin/  deps/erlang-mysql-driver/src/*.erl
+#erlc -o deps/erlang-mysql-driver/ebin/  deps/erlang-mysql-driver/src/*.erl       %编译mysql连接库
 
-#erl -pa ebin/ -pa deps/*/ebin
+#erl -pa ebin/ -pa deps/*/ebin                                                    %启动eshell
 
 1> mysql_db:start_link().                             	%连接mysql数据库
 
