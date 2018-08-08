@@ -5,18 +5,15 @@ change databases from mysql db to mnesia db
 
 
 #erlc -o ebin/ src/*.erl
-
 #erlc -o deps/erlang-mysql-driver/ebin/  deps/erlang-mysql-driver/src/*.erl
-
 #erl -pa ebin/ -pa deps/*/ebin
-
-1> mysql_db:start_link().                             %连接mysql数据库
+1> mysql_db:start_link().                             	%连接mysql数据库
 {ok,<0.34.0>}
-2> m2m:mysql_to_mnesia(test, product).               %生成同步test数据库的product表的文件
+2> m2m:mysql_to_mnesia(test, product).               	%生成同步test数据库的product表的文件
 ok
-3> c("src/m2m_db_all").                             %编译生成的文件
+3> c("src/m2m_db_all").                             	%编译生成的文件
 {ok,m2m_db_all}
-4> m2m_db_all:start().                             %开始同步数据到mnesia
+4> m2m_db_all:start().                             	%开始同步数据到mnesia
 ok
 
 注意
