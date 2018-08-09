@@ -133,7 +133,10 @@ set_data(Idname, Dbname, Tablename) ->
 		{ok, Bindata} ->
 			[Nowid|_] = lists:last(Bindata),
 			Data = [erlang:list_to_tuple(['~p'|X])||  X <- Bindata],
-			insert_data(Data),
+			F = fun() ->
+				insert_data(Data)
+			end,
+			mnesia:transaction(F),
 			init_data_~p(Nowid);
 		{no, Error} ->
 			{no, Error}
@@ -143,7 +146,7 @@ set_data(Idname, Dbname, Tablename) ->
 finish_file(L) ->
 	{ok, Fd} = file:open(?MDBFILE, [append]),
 	io:format(Fd, "~n%% insert data~ninsert_data([]) -> ok;~ninsert_data([H|T]) ->
-	_R = mnesia:transaction(fun() -> mnesia:write(H) end),
+	mnesia:write(H),
 	insert_data(T).~n~n%%start transform ~nstart() ->",[]),
 	finish_file(Fd, L).
 
