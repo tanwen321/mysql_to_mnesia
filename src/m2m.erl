@@ -40,7 +40,7 @@ get_tables(Dbname, List) ->
 	mnesia:start(),
 	init_file(),
 	L2 = get_tables_2(Dbname, L, []),
-	finish_file(L2).
+	finish_file(Dbname, L2).
 
 get_tables_2(_,[], L) ->
 	L;
@@ -62,7 +62,7 @@ mysql_to_mnesia(Dbname, Tablename) ->
 	mnesia:start(),
 	init_file(),
 	Tablename = m2m_start(Dbname, Tablename),
-	finish_file([Tablename]).
+	finish_file(Dbname, [Tablename]).
 
 m2m_start(Dbname, Tablename) ->
 	case mysql_db:start_link() of
@@ -78,7 +78,7 @@ get_table_info(Dbname, Tablename) ->
 	case mysql_db:select("show full columns from " ++ erlang:atom_to_list(Dbname) ++ "." ++ erlang:atom_to_list(Tablename)) of
 		{ok, Data} ->
 %			write_info(Data, Dbname, Tablename),
-			set_info(Data, Tablename),
+			set_info(Data, Dbname, Tablename),
 			[[Id_name,_,_,_,_,_,_,_,_]|_] = Data,
 			set_data(Id_name, Dbname, Tablename),
 			Tablename;
@@ -103,14 +103,15 @@ init_file() ->
 	init().
 
 
-set_info(Data, Tablename) ->
+set_info(Data, Dbname, Tablename) ->
 	List = [ erlang:binary_to_list(Name) || [Name,_,_,_,_,_,_,_,_] <- Data],
 	{ok, Fd} = file:open(?MDBFILE, [append]),
-	set_info(Fd, Tablename, List),
+	set_info(Fd, Dbname, Tablename, List),
 	file:close(Fd).
 
-set_info(Fd, Tablename, List) ->
-	io:format(Fd, "~n%%table:~p sync from mysql~n-record(~p, {",[Tablename,Tablename]),
+set_info(Fd, Dbname, Tablename, List) ->
+	E_name = tab_to_e(lists:flatten(io_lib:format("`~s`.`~s`",[Dbname, Tablename]))),
+	io:format(Fd, "~n%%table:~p sync from mysql~n-record(~p, {",[Tablename, E_name]),
 	set_info_2(Fd, List).
 
 set_info_2(Fd, [H])->
@@ -121,10 +122,11 @@ set_info_2(Fd,[H|T]) ->
 
 set_data(Idname, Dbname, Tablename) ->
 	{ok, Fd} = file:open(?MDBFILE, [append]),
+	E_name = tab_to_e(lists:flatten(io_lib:format("`~s`.`~s`",[Dbname, Tablename]))),
 	io:format(Fd, "~n%%create table:~p from mysql~ncreate_table_~p() ->
 	mnesia:create_table(~p, [{attributes, record_info(fields, ~p)},
   								{type, set}, {disc_copies, [node()]}]).
-		",[Tablename, Tablename, Tablename, Tablename]),
+		",[Tablename, Tablename, E_name, E_name]),
 	io:format(Fd, "~n%%init_data for table:~p from mysql.~ninit_data_~p(N) ->
 	Sql = \"select * from ~p.~p where ~s >\" ++ erlang:integer_to_list(N) ++ \" order by ~s \"++ \" limit 1000\",
 	case mysql_db:select(Sql) of
@@ -132,7 +134,7 @@ set_data(Idname, Dbname, Tablename) ->
 			ok;
 		{ok, Bindata} ->
 			[Nowid|_] = lists:last(Bindata),
-			Data = [erlang:list_to_tuple(['~p'|X])||  X <- Bindata],
+			Data = [erlang:list_to_tuple([~p|X])||  X <- Bindata],
 			F = fun() ->
 				insert_data(Data)
 			end,
@@ -140,17 +142,18 @@ set_data(Idname, Dbname, Tablename) ->
 			init_data_~p(Nowid);
 		{no, Error} ->
 			{no, Error}
-	end.~n",[Tablename, Tablename, Dbname, Tablename, Idname, Idname, Tablename, Tablename]),
+	end.~n",[Tablename, Tablename, Dbname, Tablename, Idname, Idname, E_name, Tablename]),
 	file:close(Fd).
 
-finish_file(L) ->
+finish_file(Dbname, L) ->
 	{ok, Fd} = file:open(?MDBFILE, [append]),
 	io:format(Fd, "~n%% insert data~ninsert_data([]) -> ok;~ninsert_data([H|T]) ->
 	mnesia:write(H),
 	insert_data(T).~n~n%%start transform ~nstart() ->",[]),
-	finish_file(Fd, L).
+	finish_file(Fd, Dbname, L).
 
-finish_file(Fd, [H]) ->
+finish_file(Fd, Dbname, [H]) ->
+	E_name = tab_to_e(lists:flatten(io_lib:format("`~s`.`~s`",[Dbname, H]))),
 	io:format(Fd, "~n\tcase lists:member(~p, mnesia:system_info(tables)) of
 	true ->
 		io:format(\"Table:~p is exit !!!\");
@@ -159,9 +162,10 @@ finish_file(Fd, [H]) ->
 		init_data_~p(0);
 	_ ->
 		io:format(\"mnesia is not started !!!\")
-	end.~n",[H,H,H,H]),
+	end.~n",[E_name,E_name,H,H]),
 	file:close(Fd);
-finish_file(Fd, [H|T]) ->
+finish_file(Fd, Dbname, [H|T]) ->
+	E_name = tab_to_e(lists:flatten(io_lib:format("`~s`.`~s`",[Dbname, H]))),
 	io:format(Fd, "~n\tcase lists:member(~p, mnesia:system_info(tables)) of
 	true ->
 		io:format(\"Table:~p is exit !!!\");
@@ -170,7 +174,14 @@ finish_file(Fd, [H|T]) ->
 		init_data_~p(0);
 	_ ->
 		io:format(\"mnesia is not started !!!\")
-	end,",[H,H,H,H]),
-	finish_file(Fd, T).
+	end,",[E_name,E_name,H,H]),
+	finish_file(Fd, Dbname, T).
 
-
+%%表名转成atom
+tab_to_e(Name) ->
+	try 
+		erlang:list_to_existing_atom(Name)
+	catch
+		_:_ ->
+			erlang:list_to_atom(Name)
+	end.

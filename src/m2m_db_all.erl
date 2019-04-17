@@ -1,25 +1,80 @@
 -module(m2m_db_all).
 -export([start/0]).
 
-%%table:product sync from mysql
--record(product, {id, created_time, last_modified_time, deleted, wh_id, merchant_id, ep_id, category_id, product_code, product_name, product_type, note, origin_place, storage_bin_type_id, wh_product_group_id, wh_storage_condition, wh_processing_status, transport_group_id, load_unload_group_id, shelf_life, remaining_shelf_life, shelf_life_unit_id, shelf_life_percent, ep_product_id, ep_product_code, batch_mgmt_req, catalog_no, hazard_indicator, reference_2, bom_category, entry_source, creator_id, last_modifier_id, unique_code, second_picking_tag, validation_tag}).
+%%table:fenshu sync from mysql
+-record('`test`.`fenshu`', {fid, name}).
 
-%%create table:product from mysql
-create_table_product() ->
-	mnesia:create_table(product, [{attributes, record_info(fields, product)},
+%%create table:fenshu from mysql
+create_table_fenshu() ->
+	mnesia:create_table('`test`.`fenshu`', [{attributes, record_info(fields, '`test`.`fenshu`')},
   								{type, set}, {disc_copies, [node()]}]).
 		
-%%init_data for table:product from mysql.
-init_data_product(N) ->
-	Sql = "select * from wms_master_data.product where id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+%%init_data for table:fenshu from mysql.
+init_data_fenshu(N) ->
+	Sql = "select * from test.fenshu where fid >" ++ erlang:integer_to_list(N) ++ " order by fid "++ " limit 1000",
 	case mysql_db:select(Sql) of
 		{ok, []} ->
 			ok;
 		{ok, Bindata} ->
 			[Nowid|_] = lists:last(Bindata),
-			Data = [erlang:list_to_tuple(['product'|X])||  X <- Bindata],
-			insert_data(Data),
-			init_data_product(Nowid);
+			Data = [erlang:list_to_tuple(['`test`.`fenshu`'|X])||  X <- Bindata],
+			F = fun() ->
+				insert_data(Data)
+			end,
+			mnesia:transaction(F),
+			init_data_fenshu(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+%%table:storage_bin sync from mysql
+-record('`test`.`storage_bin`', {id, created_time, last_modified_time, deleted, wh_id, class_id, section_id, bin_code, bin_type_id, length, width, height, measure_unit, max_volume, volume_unit, max_weight, weight_unit, state, bin_level_id, is_fix, x, y, z, channel, stack, layer, room, froze_state, up_assign_state, last_assign_time, channel_code, seq_no, creator_id, last_modifier_id, unique_code, class_code, section_code}).
+
+%%create table:storage_bin from mysql
+create_table_storage_bin() ->
+	mnesia:create_table('`test`.`storage_bin`', [{attributes, record_info(fields, '`test`.`storage_bin`')},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin from mysql.
+init_data_storage_bin(N) ->
+	Sql = "select * from test.storage_bin where id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['`test`.`storage_bin`'|X])||  X <- Bindata],
+			F = fun() ->
+				insert_data(Data)
+			end,
+			mnesia:transaction(F),
+			init_data_storage_bin(Nowid);
+		{no, Error} ->
+			{no, Error}
+	end.
+
+%%table:storage_bin_sort sync from mysql
+-record('`test`.`storage_bin_sort`', {id, created_time, last_modified_time, deleted, wh_id, wh_code, task_type, bin_id, bin_code, storage_class_id, storage_class_code, storage_section_id, storage_section_code, activity_area_id, activity_area_code, order_seq, creator_id, last_modifier_id, pick_mode, bin_type_Id}).
+
+%%create table:storage_bin_sort from mysql
+create_table_storage_bin_sort() ->
+	mnesia:create_table('`test`.`storage_bin_sort`', [{attributes, record_info(fields, '`test`.`storage_bin_sort`')},
+  								{type, set}, {disc_copies, [node()]}]).
+		
+%%init_data for table:storage_bin_sort from mysql.
+init_data_storage_bin_sort(N) ->
+	Sql = "select * from test.storage_bin_sort where id >" ++ erlang:integer_to_list(N) ++ " order by id "++ " limit 1000",
+	case mysql_db:select(Sql) of
+		{ok, []} ->
+			ok;
+		{ok, Bindata} ->
+			[Nowid|_] = lists:last(Bindata),
+			Data = [erlang:list_to_tuple(['`test`.`storage_bin_sort`'|X])||  X <- Bindata],
+			F = fun() ->
+				insert_data(Data)
+			end,
+			mnesia:transaction(F),
+			init_data_storage_bin_sort(Nowid);
 		{no, Error} ->
 			{no, Error}
 	end.
@@ -27,17 +82,35 @@ init_data_product(N) ->
 %% insert data
 insert_data([]) -> ok;
 insert_data([H|T]) ->
-	_R = mnesia:transaction(fun() -> mnesia:write(H) end),
+	mnesia:write(H),
 	insert_data(T).
 
 %%start transform 
 start() ->
-	case lists:member(product, mnesia:system_info(tables)) of
+	case lists:member('`test`.`storage_bin_sort`', mnesia:system_info(tables)) of
 	true ->
-		io:format("Table:product is exit !!!");
+		io:format("Table:'`test`.`storage_bin_sort`' is exit !!!");
 	false ->
-		create_table_product(),
-		init_data_product(0);
+		create_table_storage_bin_sort(),
+		init_data_storage_bin_sort(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member('`test`.`storage_bin`', mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:'`test`.`storage_bin`' is exit !!!");
+	false ->
+		create_table_storage_bin(),
+		init_data_storage_bin(0);
+	_ ->
+		io:format("mnesia is not started !!!")
+	end,
+	case lists:member('`test`.`fenshu`', mnesia:system_info(tables)) of
+	true ->
+		io:format("Table:'`test`.`fenshu`' is exit !!!");
+	false ->
+		create_table_fenshu(),
+		init_data_fenshu(0);
 	_ ->
 		io:format("mnesia is not started !!!")
 	end.
