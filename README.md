@@ -28,7 +28,7 @@ m2m:mysql_to_mnesia/2
 
 {ok,<0.34.0>}
 
-2> m2m:mysql_to_mnesia(test, product).               	%生成同步test数据库的product表的文件，m2m:mysql_to_mnesia(test）表示同步test库所有表
+2> m2m:mysql_to_mnesia(test, product).               	%生成同步test数据库的product表的文件，m2m:mysql_to_mnesia(test)表示同步test库所有表
 
 ok
 
