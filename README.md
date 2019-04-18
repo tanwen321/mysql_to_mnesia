@@ -48,6 +48,6 @@ ok
 
 3、不会同步数据库，只同步数据库下面的表（如果没有mnesia库，会在当前目录新建一个默认的mnesia库），
 
-4、新的erlang表名就是原mysql数据库的 库名.表名
+4、新的erlang表名就是原mysql数据库的 库名.表名，如mysql中test数据库下面的user表转成mnesia下就是'`test`.`user`'表
 
 5、mysql表的第一个字段为唯一索引，且字段名称为id
